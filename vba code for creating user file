@@ -1,0 +1,35 @@
+Sub createUserFiles()
+
+    Dim wsS As Worksheet
+    Dim fso As Object
+    Dim iRow As Integer
+    
+    Dim sFileFrom As String
+    Dim sFileTo As String
+    Dim sFileTo1 As String
+    
+    Dim sFileName As String
+    
+    Set fso = VBA.CreateObject("Scripting.FileSystemObject")
+    Set wsS = Worksheets("Sheet3")
+    
+    sFileFrom = "Z:\Admin Files and Folders\Aidan Evans Temp\AETestSpreadhseets\PayAdviceTemplates\2023-2024\payAdviceTemplateEmails2023_2024.xlsm"
+    sFileTo = "Z:\L & s umbrella\Pay Advice\Pay Advice 2023_2024\"
+    
+    iRow = 1
+    
+    While wsS.Cells(iRow, 1).Value <> ""
+        
+        sFileTo1 = ""
+        sFileName = Trim(wsS.Cells(iRow, 2).Value) + " " + Trim(wsS.Cells(iRow, 3).Value)
+        
+        sFileTo1 = sFileTo + sFileName + ".xlsm"
+        
+        If Dir(sFileTo1) = "" Then
+            Call fso.CopyFile(sFileFrom, sFileTo1)
+        End If
+        
+        iRow = iRow + 1
+    Wend
+    
+End Sub
