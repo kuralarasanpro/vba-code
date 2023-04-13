@@ -1,0 +1,74 @@
+Sub addUserData()
+    Dim wkbkDest As Workbook
+    Dim wsS As Worksheet
+    
+    Dim iRow As Integer
+    
+    Dim i As Long
+    Dim rRef As Variant
+    
+    Set wsS = Worksheets("Sheet3")
+    
+    sDestFolder = "Z:\L & s umbrella\Pay Advice\Pay Advice 2023_2024\"
+    
+    iRow = 1
+    
+    'Application.ScreenUpdating = False
+    
+    While wsS.Cells(iRow, 1).Value <> ""
+    
+        sempnum = wsS.Cells(iRow, 1).Value
+        
+        sName = Trim(wsS.Cells(iRow, 2).Value) + " " + Trim(wsS.Cells(iRow, 3).Value)
+        
+        sNatInNo = wsS.Cells(iRow, 6).Value
+        sAddress = wsS.Cells(iRow, 7).Value
+        sEmail = wsS.Cells(iRow, 8).Value
+        
+        sNICode = "A" 'wsS.Cells(iRow, 11).Value
+        'MsgBox ((sName + sNatInNo + sAddress))
+        
+        Set wkbkDest = Workbooks.Open(sDestFolder + sName + ".xlsm")
+        
+        'MsgBox wkbkDest.Sheets("Name").Cells(2, 1).Value
+        wkbkDest.Sheets("Name").Cells(7, 1).Value = sempnum
+        wkbkDest.Sheets("Name").Cells(2, 2).Value = sName
+        wkbkDest.Sheets("Name").Cells(4, 2).Value = sAddress
+        wkbkDest.Sheets("Name").Cells(7, 4).Value = sNatInNo
+        wkbkDest.Sheets("Name").Cells(7, 3).Value = sNICode
+        wkbkDest.Sheets("Name").Cells(7, 5).Value = sEmail
+        
+        For i = wkbkDest.VBProject.References.Count To 1 Step -1
+            Set rRef = wkbkDest.VBProject.References
+            
+            For Each oref In rRef
+                If oref.Description = "Microsoft Outlook 16.0 Object Library" Then
+                    wkbkDest.VBProject.References.Remove (oref)
+                End If
+            Next
+        Next i
+        
+        Application.DisplayAlerts = False
+        With wkbkDest
+            .Save
+            .Close
+        End With
+        
+        iRow = iRow + 1
+    Wend
+    
+    'Application.ScreenUpdating = True
+    
+    'Set wkbkDest = Workbooks.Open("")  'Destination Workbook
+    
+    
+    'copy stuff here
+    'wsSource.Copy After:=wkbkDest.Sheets("")
+    
+    'Optional clean up code
+    'Application.DisplayAlerts = False
+    'With wkbkDest
+    '    .Save
+    '    .Close
+    'End With
+End Sub
