@@ -1,0 +1,58 @@
+Public Sub Main()
+
+    Dim WB1 As Workbook
+    Dim WB2 As Workbook
+    
+    Workbooks.Open ("Z:\OneDrive\Admin Files and Folders\Aidan Evans Temp\AETestSpreadhseets\PayAdviceTemplates\2023-2024\payAdviceTemplateEmails2023_2024.xlsm")
+    
+    Set WB1 = Workbooks("payAdviceTemplateEmails2023_2024")
+    
+    Dim FName As String
+    
+    With WB1
+        FName = .Path & "code.txt"
+        .VBProject.VBComponents("Module1").Export FName
+    End With
+    WB1.Close
+    
+    
+    Dim iRow As Integer
+    Dim wsS As Worksheet
+    
+    Set wsS = Worksheets("Sheet3")
+    
+    iRow = 1
+    
+    Dim sFileName As String
+    
+    sFileName = ""
+    
+    While wsS.Cells(iRow, 1).Value <> ""
+        sFileName = "Z:\OneDrive\L & s umbrella\Pay Advice\Pay Advice 2023_2024\" & wsS.Cells(iRow, 1).Value & ".xlsm"
+        Workbooks.Open (sFileName)
+        Set WB2 = Workbooks(wsS.Cells(iRow, 1).Value)
+        
+        With WB2
+            .VBProject.VBComponents.Remove .VBProject.VBComponents("Module1")
+            .VBProject.VBComponents.Import FName
+        End With
+        
+        WB2.VBProject.VBComponents("ThisWorkBook").CodeModule.AddFromString _
+            "Private Sub Workbook_Open()" & vbLf & _
+            "    Dim wsN as Worksheet" & vbLf & _
+            "    Set wsN = Worksheets(" & Chr(34) & "Name" & Chr(34) & ")" & vbLf & _
+            "    Dim dStartDate As Date" & vbLf & _
+            "    Dim dEndDate As Date" & vbLf & _
+            "    Dim tVar As Integer" & vbLf & vbLf & _
+            "    dStartDate = DateValue(" & Chr(34) & "01/04/2021" & Chr(34) & ") + 7 - Weekday(DateValue(" & Chr(34) & "01/04/2021" & Chr(34) & ") + 1)" & vbLf & vbLf & _
+            "    dEndDate = DateValue(Format(Date, " & Chr(34) & "dd/mm/yyyy" & Chr(34) & ")) + 7 - Weekday(DateValue(Format(Date, " & Chr(34) & "dd/mm/yyyy" & Chr(34) & ")) + 1)" & vbLf & _
+            "    tVar = DateDiff(" & Chr(34) & "d" & Chr(34) & ", dStartDate, dEndDate)" & vbLf & _
+            "    wsN.Cells(10, 1).Value = Int(tVar /7) + 1" & vbLf & _
+            "End Sub"
+        
+        WB2.Close SaveChanges:=True
+        
+        iRow = iRow + 1
+    Wend
+    
+End Sub
